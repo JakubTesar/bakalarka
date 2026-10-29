@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres:17
+    container_name: bakalarka-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-bakalarka}
+      POSTGRES_USER: ${POSTGRES_USER:-bp}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-bp}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-bp} -d ${POSTGRES_DB:-bakalarka}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:
